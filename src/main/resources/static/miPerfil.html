@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="description" content="Sona Template">
+    <meta name="keywords" content="Sona, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Cabin:400,500,600,700&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="css/flaticon.css" type="text/css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    
+     <!-- Js Plugins -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/jquery.slicknav.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/listaApartamentos3.js"></script>
+    <script type="text/javascript"> 
+    	$(function(){
+			$("#header").load("header.html"); 
+		    $("#offCanvas").load("offCanvas.html"); 
+		    $("#footer").load("footer.html"); 
+		 });
+	</script>
+	<script>
+	$(document).ready(function() {
+		$.ajax({
+			type:"GET",
+			url:sessionStorage.url+"/api/user/"+sessionStorage.userId,
+			success: function(data){
+				document.getElementById("imageShow").setAttribute("src", data.image);
+		        
+		        document.getElementById("name").value = data.nombre
+			    document.getElementById("lastname").value = data.apellidos
+				document.getElementById("email").value = data.email
+				document.getElementById("age").value = data.edad
+
+			}
+			
+			
+			
+		})
+	});
+	</script>
+	<script>
+	function sendToDetalles(id) {
+		window.sessionStorage.setItem("apartmentId", id);
+		window.location = "/editarVivienda.html";
+	};
+	</script>
+
+	<script>
+	function editar(){
+        document.getElementById("name").disabled = false
+        document.getElementById("lastname").disabled = false
+        document.getElementById("email").disabled = false
+        document.getElementById("age").disabled = false
+		document.getElementById("fileId").hidden = false
+		document.getElementById("guardarCambios").hidden = false
+		document.getElementById("cancelar").hidden = false
+		document.getElementById("editarPerfil").hidden = true
+
+	}
+	
+	function cancelar(){
+        document.getElementById("name").disabled = true
+        document.getElementById("lastname").disabled = true
+        document.getElementById("email").disabled = true
+        document.getElementById("age").disabled = true
+		document.getElementById("fileId").hidden = true
+		document.getElementById("guardarCambios").hidden = true
+		document.getElementById("cancelar").hidden = true
+		document.getElementById("editarPerfil").hidden = false
+
+	}
+	
+	function guardarCambios(){
+        document.getElementById("name").disabled = true
+        document.getElementById("lastname").disabled = true
+        document.getElementById("email").disabled = true
+        document.getElementById("age").disabled = true
+		document.getElementById("fileId").hidden = true
+		document.getElementById("guardarCambios").hidden = true
+		document.getElementById("cancelar").hidden = true
+		document.getElementById("editarPerfil").hidden = false
+		
+		var formData = new FormData();
+		formData.append("id", sessionStorage.userId)
+		formData.append("email", document.getElementById("email").value)
+		formData.append("name", document.getElementById("name").value)
+		formData.append("lastname", document.getElementById("lastname").value)
+		formData.append("age", document.getElementById("age").value)
+		var a = document.getElementById("fileId").files;
+		if(a.length > 0){
+			formData.append("image", document.getElementById("fileId").files[0])
+		}
+		$.ajax({
+			type:"PUT",
+			url:sessionStorage.url+"/api/user/",
+		    processData: false,
+			contentType: false,
+			data:formData,
+			success:function(data){
+				location.reload()
+			}
+		});
+		
+	}
+	
+	
+	</script>
+
+
+</head>
+<body>
+	<!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+    <!-- Offcanvas Menu Section Begin -->
+    <div id="offCanvas"></div>
+    <!-- Offcanvas Menu Section End -->
+    <!-- Header Section Begin -->
+    <div id="header"></div>    
+    <!-- Header End -->
+	
+	<!-- Room Details Section Begin -->
+    <section class="room-details-section spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="room-details-item">
+                        <img id="imageShow" alt="">
+                        <div class="rd-text">
+                            <div class="rd-title">
+                                <h3 class="apartment-title"></h3>
+                                
+                            </div>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td class="r-o">Nombre:</td>
+                                        <td><input class="editable" type="text" id="name" disabled></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="r-o">Apellidos:</td>
+                                        <td><input class="editable" type="text" id="lastname" disabled></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="r-o">Email:</td>
+                                        <td><input class="editable" type="text" id="email" disabled></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="r-o">Edad:</td>
+                                        <td><input class="editable" type="number" id="age" disabled></td>
+                                    </tr>
+                                    <tr>
+                                       
+                                        <td><input class="editable" type="file" id="fileId" hidden=true></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            <form action="javascript:editar()">
+                            <input id="editarPerfil" type="submit" value="Editar perfil">
+                            </form>
+                            <form action="javascript:guardarCambios()">
+                            <input id="guardarCambios" class="btn btn-primary" type="submit" value="Guardar cambios" hidden=True>
+                            </form>
+                            <form action="javascript:cancelar()">
+                            <input id="cancelar" class="btn btn-danger" type="submit" value="Cancelar" hidden=True>
+                            </form>
+
+                        </div>
+                    </div>
+                    <div class="rd-reviews">
+                        <h4>Propiedades</h4>
+                        	<section class="rooms-section spad">
+						        <div class="container">
+						        	<div class="row" id="tablaApar">
+						            </div>
+						        </div>
+						    </section>
+                        
+                    </div>
+                    
+                </div>
+               
+            </div>
+        </div>
+    </section>
+
+	<!-- Footer Section Begin -->
+    <div id="footer"></div>
+    <!-- Footer Section End -->
+
+
+</body>
+
+</html>

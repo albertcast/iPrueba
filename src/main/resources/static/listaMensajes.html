@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Cabin:400,500,600,700&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="css/flaticon.css" type="text/css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    
+     <!-- Js Plugins -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/jquery.slicknav.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
+
+    <script type="text/javascript"> 
+    	$(function(){
+			$("#header").load("header.html"); 
+		    $("#offCanvas").load("offCanvas.html"); 
+		    $("#footer").load("footer.html"); 
+		 });
+    	
+    	
+    	$(document).ready(mostrarMensajes())
+    	
+    	
+    	function mostrarMensajes(){
+    		$.ajax({
+    			type:"GET",
+    			url:sessionStorage.url+"/api/message/messagesBetweenUsers",
+    			data:{
+    				firstUserId:sessionStorage.userId,
+    				secondUserId:sessionStorage.receiver,
+    			},
+    			success:function(data){
+    				
+    				if(data != null){
+    					document.getElementById("tablaMensajes").innerHTML = "<tr><th>Usuario</th><th>Mensaje</th></tr>";
+	    				data.map(i => {
+	    					var sel = '';
+
+	    					$.ajax({
+	    						type:"GET",
+	        					url:sessionStorage.url+"/api/user/"+i.sender,
+	        					success:function(datos){
+	        						if(i.sender==sessionStorage.userId){
+	    	    						sel +="<tr style='border: solid thin' class='table-success'><td style='width:30%;'>" + datos.nombre+ " " + datos.apellidos + "</td><td style='width:125px'>" + i.content + "</td><td style='width: 10%; white-space:nowrap;'><form action='javascript:editarComentario("+'"'+i.content+'","'+i.id+'"'+")'><input class='btn btn-warning' type='submit' value='Editar'></form></td><td style='width: 10%; white-space:nowrap;'><form action='javascript:borrarComentario("+'"'+i.id+'"'+")'><input class='btn btn-danger' type='submit' value='Borrar'></form></td></tr>";
+	    	    					} else {
+	    	    						sel +="<tr><td style='width:30%;'>" + datos.nombre+ " " + datos.apellidos +"</td><td>" + i.content + "</td></tr>";
+	    	    					}
+	    							document.getElementById("tablaMensajes").innerHTML +=  sel;
+	        					}
+	        				})
+
+
+	    				});
+    				}
+    			}		
+    		})   		
+    	}
+    	
+    	
+    	function nuevoMensaje(){
+    		document.getElementById("formCrear").hidden = false;
+    		document.getElementById("formEditar").hidden= true;
+
+    	}
+    	
+    	function crearMensaje(){
+    		$.ajax({
+    			type:"POST",
+    			url:sessionStorage.url+"/api/message/",
+    			data:{
+    				sender:sessionStorage.userId,
+    				receiver:sessionStorage.receiver,
+    				content:document.getElementById("contentId").value,
+    			},
+    			success:function(){
+    				mostrarMensajes();
+    	    		document.getElementById("formEditar").hidden= true;
+    	    		document.getElementById("formCrear").hidden= true;
+
+    			},
+    		})
+    	}
+    	
+    	function editarComentario(cont, id){
+    		document.getElementById("formCrear").hidden = true;
+    		document.getElementById("formEditar").hidden= false;
+    		document.getElementById("contId").value= cont;
+    		document.getElementById("formEditar").action= "javascript:editarMensaje('"+id+"')";
+    	}
+    	
+    	function editarMensaje(mId){
+    		$.ajax({
+    			type:"PUT",
+    			url:sessionStorage.url+"/api/message/",
+    			data:{
+    				id:mId,
+    				content:document.getElementById("contId").value,
+    			},
+    			success:function(){
+    				mostrarMensajes();
+    				document.getElementById("formEditar").hidden= true;
+    	    		document.getElementById("formCrear").hidden= true;
+    			},
+    		})	
+    	}
+    	
+    	function borrarComentario(meId){
+    		$.ajax({
+    			type:"DELETE",
+    			url:sessionStorage.url+"/api/message/",
+    			data:{
+    				id:meId,
+    			},
+    			success:function(){
+    				mostrarMensajes();
+    			},
+    		})	
+    	}
+    	
+    	
+	</script>
+
+	<style>
+	
+		
+	</style>
+
+</head>
+
+<body>
+	<!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+    <!-- Offcanvas Menu Section Begin -->
+    <div id="offCanvas"></div>
+    <!-- Offcanvas Menu Section End -->
+    <!-- Header Section Begin -->
+    <div id="header"></div>    
+    <!-- Header End -->
+    <div style="margin:auto;width:50%;">
+	    <form action="javascript:nuevoMensaje()">
+	    	<input class="btn btn-primary" type="submit" value="Nuevo mensaje">
+	    
+	    </form>
+	    
+	    <br>
+	    <form id="formCrear" action="javascript:crearMensaje()" hidden=true>
+	    	<label for="contentId">Nuevo mensaje</label><br>
+	    	<textarea rows=5 cols=100 id="contentId"></textarea>
+	    	<br>
+	    	<input type="submit" value="Enviar">
+	    
+	    </form>
+	    
+	    <form id="formEditar" action="javascript:editarMensaje()" hidden=true>
+	    	<label for="contId">Editar mensaje</label><br>
+	    	<textarea rows=5 cols=100 id="contId"></textarea>
+	    	<br>
+	    	<input type="submit" value="Editar">
+	    
+	    </form>
+    </div>
+	<table style="margin:auto; width:50%" id="tablaMensajes">
+			
+	</table>
+
+	<!-- Footer Section Begin -->
+    <div id="footer"></div>
+    <!-- Footer Section End -->
+
+    
+
+</body>
+
+
+
+</html>

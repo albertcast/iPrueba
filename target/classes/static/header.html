@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script type="text/javascript"
+    	src="/webjars/js-cookie/js.cookie.js"></script>
+	<script type="text/javascript">
+          $
+              .ajaxSetup({
+                beforeSend : function(xhr, settings) {
+				  sessionStorage.url = "";
+
+                  if (settings.type == 'POST' || settings.type == 'PUT'
+                      || settings.type == 'DELETE') {
+                    if (!(/^http:.*/.test(settings.url) || /^https:.*/
+                        .test(settings.url))) {
+                      // Only send the token to relative URLs i.e. locally.
+                      xhr.setRequestHeader("X-XSRF-TOKEN",
+                          Cookies.get('XSRF-TOKEN'));
+                    }
+                  }
+                }
+              });
+          $.get("/user", function(data) {
+          	$.ajax({
+        	    	url: sessionStorage.url+"/api/user/usersByAccountAuthentication",
+        	    	data:{accountAuthentication:data.accountAuthentication},
+  	        	success: function(msg){
+  		             //alert(data.string);
+  		        }
+        	    }).then(function(datos) {
+        	    	if(datos == null){
+  					$.ajax({
+  						type: "POST",
+  						url: sessionStorage.url+"/api/user/",
+  						data:{email:data.email, name:data.name, lastname:data.lastname, age:data.age, accountAuthentication:data.accountAuthentication, image:data.avatar_url},
+  						success: function(msg){
+  				             //alert(data.accountAuthentication);
+  				        }
+  					}).then(function(d){
+  						sessionStorage.userId = d.usuarioId;
+  			            document.getElementById("avatar").setAttribute("src", d.image)
+
+  					})
+  				} else {
+  					sessionStorage.userId = datos.usuarioId;
+  		            document.getElementById("avatar").setAttribute("src", datos.image)
+
+  				}	
+        	    	
+        	    });
+        	
+            $("#user").html(data.name);
+            $(".unauthenticated").hide();
+            $(".authenticated").show();
+          });
+          var logout = function() {
+            $.post("/logout", function() {
+            	sessionStorage.removeItem("userId");
+            	sessionStorage.removeItem("email");
+            	sessionStorage.removeItem("name");
+            	sessionStorage.removeItem("lastname");
+            	sessionStorage.removeItem("age");
+              $("#user").html('');
+              $(".unauthenticated").show();
+              $(".authenticated").hide();
+            })
+            return true;
+          }
+        
+          
+          </script>
+        
+        
+
+</head>
+<body>
+    <header class="header-section">
+        <div class="top-nav">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <ul class="tn-left">
+                            <li><i class="fa fa-phone"></i> (12) 345 67890</li>
+                            <li><i class="fa fa-envelope"></i> info.UMA@gmail.com</li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="tn-right">                            
+                            <div class="language-option">
+                                <img src="img/es.png" alt="">
+                                <span>ES </span>
+                            </div>
+                            <div class="unauthenticated">
+                            	<ul>
+                            		<li>Login With GitHub: <a href="/oauth2/authorization/github">click here</a>
+                            	</ul>
+                            </div>
+                            <div class="language-option authenticated">
+				                <img id="avatar" alt="">
+				                <span><span id="user"></span> <i class="fa fa-angle-down"></i></span>
+					                <div class="flag-dropdown">
+					                    <ul>
+					                        <li><a href="misViviendas.html">Mis viviendas</a></li>
+					                        <li><a href="listaConversaciones.html">Conversaciones</a></li>
+					                        <li><a href="miPerfil.html">Mi perfil</a></li>
+					                        
+					                        <li><a href="javascript:logout()">Cerrar sesi�n</a></li>
+					                    </ul>
+					                </div>
+				            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="menu-item">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="logo">
+                            <a href="./index.html">
+                                <img src="img/landbnb-logo2.png" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-10">
+                        <div class="nav-menu">
+                            <nav class="mainmenu">
+                                <ul>
+                                    <li><a href="./index.html">Home</a></li>
+                                    <li><a href="./viviendas.html">Viviendas</a></li>
+                                    <li><a href="./about-us.html">Sobre nosotros</a></li>
+                                    <li><a href="./contact.html">Contacto</a></li>
+                                    <li><a href="./externo.html">Otros</a></li>
+                                </ul>
+                            </nav>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Header End -->
+
+</body>
+
+</html>

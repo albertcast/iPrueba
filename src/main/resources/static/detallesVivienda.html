@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Sona Template">
+    <meta name="keywords" content="Sona, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>LandBNB</title>
+	
+	
+    
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Cabin:400,500,600,700&display=swap" rel="stylesheet">
+    
+    
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="css/flaticon.css" type="text/css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+
+	<!-- Js Plugins -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/jquery.slicknav.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+	     integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+	     crossorigin=""/>	 
+	<!-- Make sure you put this AFTER Leaflet's CSS -->
+	 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+	     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+	     crossorigin=""></script>
+	
+	
+	<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+	 <script src="js/leaflet.markercluster.js"></script>
+	<script type="text/javascript"> 
+    	$(function(){
+			$("#header").load("header.html"); 
+		    $("#offCanvas").load("offCanvas.html"); 
+		    $("#footer").load("footer.html"); 
+		 });
+	</script>		
+    <script src="../js/listaComentarios.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="../js/detallesApartamento.js"></script>
+    <script>
+    	$.ajax({
+    		url: sessionStorage.url+"/api/apartment/"+window.sessionStorage.apartmentId
+    	}).then(function(data) {
+    		let date = new Date(data.date)
+
+	    	let day = date.getDate()
+	    	let month = date.getMonth() + 1
+	    	let year = date.getFullYear()
+
+	    	if(month < 10){
+	    		if(day < 10){
+		    		document.getElementById("date-in").min = year + '-0' + month + '-0' + day
+		    		document.getElementById("date-out").min = year + '-0' + month + '-0' + day
+				} else {
+		    		document.getElementById("date-in").min= year + '-0' + month + '-' + day
+		    		document.getElementById("date-out").min= year + '-0' + month + '-' + day
+				}
+	    	}else{
+	    		if(day < 10){
+		    		document.getElementById("date-in").min= year + '-' + month + '-0' + day
+		    		document.getElementById("date-out").min= year + '-' + month + '-0' + day
+
+				} else {
+		    		document.getElementById("date-in").min= year + '-' + month + '-' + day
+		    		document.getElementById("date-out").min= year + '-' + month + '-' + day
+
+				}
+	    	}
+			document.getElementById("capac").max = data.capacity;
+	    });
+
+
+		var newMin = function(){
+			document.getElementById("date-out").min = document.getElementById("date-in").value
+		}
+	
+		var reservar = function(){
+			$.ajax({
+				type:"POST",
+	    		url: sessionStorage.url+"/api/booking/",
+	    		data:{ 
+	    			guest:sessionStorage.userId,
+	    			arrivalDate:document.getElementById("date-in").value, 
+	    			departureDate:document.getElementById("date-out").value, 
+	    			apartment:sessionStorage.apartmentId,
+	    		}
+	    	}).then(function(data) {
+	    		$.ajax({
+	    			type:"GET",
+	    	        url: sessionStorage.url+"/api/apartment/"+window.sessionStorage.apartmentId
+	    		}).then(function(datos){
+	    			var formData = new FormData();
+	    			formData.append("id", sessionStorage.apartmentId)
+	    			formData.append("title", datos.title)
+	    			formData.append("place", datos.place)
+	    			formData.append("description", datos.description)
+	    			formData.append("date", document.getElementById("date-out").value)
+	    			formData.append("owner", datos.owner)
+	    			formData.append("capacity", datos.capacity)
+	    			formData.append("price", datos.price)
+	    			formData.append("latitude", datos.latitude)
+	    			formData.append("longitude", datos.longitude)
+	    			$.ajax({
+						type:"PUT",
+						url: sessionStorage.url+"/api/apartment/",	
+						processData: false,
+						contentType: false,
+						data: formData,
+						
+						success: function(data){			
+							 //alert("Se ha hecho la reserva");
+							 
+							 $.ajax({
+					    			type:"POST",
+					    			url:sessionStorage.url+"/api/message/",
+					    			data:{
+					    				sender:sessionStorage.userId,
+					    				receiver:datos.owner,
+					    				content:"He realizado una reserva de tu piso " + datos.title + " desde el " + document.getElementById("date-in").value + " hasta " + document.getElementById("date-out").value + " para " + document.getElementById("capac").value + " huéspedes",
+					    			},
+					    			success:function(){
+					    				sessionStorage.receiver = datos.owner;
+					    				location.href = "listaMensajes.html"
+
+					    			},
+					    		})
+							 
+						}
+					});
+	    		})
+	    	})};
+			
+	    	var map;
+	    	
+   		
+   	
+	function addComment(){
+		let date = new Date()
+
+    	let day = date.getDate()
+    	let month = date.getMonth() + 1
+    	let year = date.getFullYear()
+		let fecha
+    	if(month < 10){
+    		if(day < 10){
+	    		fecha = year + '-0' + month + '-0' + day
+	    		
+			} else {
+	    		fecha = year + '-0' + month + '-' + day
+	    		
+			}
+    	}else{
+    		if(day < 10){
+	    		fecha= year + '-' + month + '-0' + day
+	    		
+
+			} else {
+	    		fecha= year + '-' + month + '-' + day
+	    		
+
+			}
+    	}
+		$.ajax({
+			type:"POST",
+			url: sessionStorage.url+"/api/comment/",
+			data:{
+				user:sessionStorage.userId,
+				apartment:sessionStorage.apartmentId,
+				text:document.getElementById("textoCom").value,
+				rating:document.getElementById("valorar").value,
+				date:fecha,
+			},
+			success: function(data){	
+				location.reload();
+				 //alert("SE HA AÑADIDO LA VIVIENDA CORRECTAMENTE");
+			}
+		});
+	}
+	
+	function borrar(cid){
+		$.ajax({
+				type:"DELETE",
+				url: sessionStorage.url+"/api/comment/",
+				data:{
+					id:cid,
+				},
+				success: function(msg){
+					//alert("SE HA ELIMINADO EL COMENTARIO CORRECTAMENTE");
+				}
+			}).then(function(datos){
+				location.reload();
+			})
+	}
+	
+	
+	
+	</script>
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Offcanvas Menu Section Begin -->
+    <div id="offCanvas"></div>
+    <!-- Offcanvas Menu Section End -->
+
+    <!-- Header Section Begin -->
+    <div id="header"></div>
+    <!-- Header End -->
+
+    <!-- Breadcrumb Section Begin -->
+    <div class="breadcrumb-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-text">
+                        <h2>Nuestras viviendas</h2>
+                        <div class="bt-option">
+                            <a href="./home.html">Home</a>
+                            <span>Viviendas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Room Details Section Begin -->
+    <section class="room-details-section spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="room-details-item">
+                        <img id="imageShow" alt="">
+                        <div class="rd-text">
+                            <div class="rd-title">
+                                <h3 class="apartment-title"></h3>
+                                
+                            </div>
+                            <h2 class="apartment-price">€<span>/Por noche</span></h2>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td class="r-o">Ubicación:</td>
+                                        <td class="apartment-place"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="r-o">Capacidad:</td>
+                                        <td class="apartment-capacity"></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            <label for="description">Descripción</label>
+                            <textarea id="description" rows=3 cols=150 readonly></textarea>
+                        </div>
+                        <div id="map" style="height:700px; width:1200px; margin:0 auto; margin-bottom:50px"></div>
+                    </div>
+                    <div class="rd-reviews">
+                        <h4>Reseñas</h4>
+                        	<div id="tablaComment"></div>
+                        
+                        
+                    </div>
+                    <div class="review-add">
+                        <h4>Añadir reseña</h4>
+                        <form action="#" class="ra-form">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div>
+                                        <h5>Valoración:</h5>
+                                        <input type="number" min="1" max="5" id="valorar" placeholder="Introduce un número del 1 al 5">                                       
+                                    </div>
+                                    <textarea id="textoCom" placeholder="Tu reseña"></textarea>
+                                    <button type="submit" onclick="addComment()">Publicar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="room-booking">
+                        <h3>Tu reserva</h3>
+                        <form action="javascript:reservar()">
+                            <div class="check-date">
+                                <label for="date-in">Check In:</label>
+                                <input type="date" id="date-in" oninput="newMin()">
+                            </div>
+                            <div class="check-date">
+                                <label for="date-out">Check Out:</label>
+                                <input type="date" id="date-out" >
+                            </div>
+
+                            <div style="width:450px">
+							     <label>Huéspedes:</label>
+                                 <input id="capac" type="number" min="1"  placeholder="1">
+							</div>
+                            
+                            <button type="submit">Reservar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Room Details Section End -->
+
+    <!-- Footer Section Begin -->
+    <div id="footer"></div>
+    <!-- Footer Section End -->
+
+    
+
+  
+    
+    
+</body>
+
+</html>

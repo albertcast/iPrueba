@@ -1,0 +1,21 @@
+.login {
+    background: url(/img/backgroundLogin.png);
+    margin: 0;
+    padding: 0;
+    height:100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+body, html {
+  height: 100%;
+}
+
+.login-div{
+	background-color:white;
+	border-style: double;
+	height:600px;
+	width: 60px;
+	padding:10px;
+}

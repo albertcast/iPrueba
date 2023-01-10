@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Cabin:400,500,600,700&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="css/flaticon.css" type="text/css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    
+     <!-- Js Plugins -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/jquery.slicknav.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
+
+    <script type="text/javascript"> 
+    	$(function(){
+			$("#header").load("header.html"); 
+		    $("#offCanvas").load("offCanvas.html"); 
+		    $("#footer").load("footer.html"); 
+		 });
+
+    	
+    	/* $(document).ready(function() {
+    	    $.ajax({
+    	      	url: sessionStorage.url+"/api/apartment/",
+    			success: function(data){		
+    				sessionStorage.setItem("apartmentId", data.apartmentId);	
+    				let output = data.map(i => "<tr class='clickable' onclick='sendToDetalles("+ '"'+ i.id + '"' + ")'><th scope='row'>" + i.title + "</th><td>" + i.place
+    											+ "</td><td>" + i.description+ "</td><td>" + i.date + "</td></tr>").join('');
+    				document.getElementById("tablaAparment").innerHTML += output;
+    			}
+    	    })
+    	});	 */
+
+    	function buscarUsuario(){
+    		$.ajax({
+    			url:sessionStorage.url+"/api/user/usersByName",
+    			data:{
+    				name:document.getElementById("searchUserText").value,
+    			},
+    			success: function(data){
+    				let output = '';
+    				data.map(function(i){
+    					if(i.usuarioId != sessionStorage.userId){
+	    					output += "<tr class='clickable' onclick='sendToMensajes("+ '"'+ i.usuarioId + '"' + ")'><td>" + i.email + "</td><td>" + i.nombre + "</td><td>" + i.apellidos + "</td><td>" + i.edad + "</td></tr>";
+    					}
+					});
+					document.getElementById("tablaUser").innerHTML = "<tr ><th>Email</th><th>Name</th><th>Lastname</th><th>Age</th></tr>"+ output;
+    			}
+    		})
+    		
+    		
+    	}
+    	
+    	function sendToMensajes(id){
+    		sessionStorage.receiver = id;
+    		location.href = "listaMensajes.html"
+    	}
+    	
+    	$(document).ready(function(){
+    		$.ajax({
+    			type:"GET",
+    			url:sessionStorage.url+"/api/user/usersByChats",
+    			data:{
+    				usuarioId:sessionStorage.userId,
+    			},
+    			success: function(data){
+    				let output = data.map(i => "<tr class='clickable' onclick='sendToMensajes("+ '"'+ i.usuarioId + '"' + ")'><td>" + i.email + "</td><td>" + i.nombre 
+							+ "</td><td>" + i.apellidos + "</td><td>" + i.edad + "</td></tr>").join('');
+					document.getElementById("tablaConver").innerHTML = "<tr ><th>Email</th><th>Name</th><th>Lastname</th><th>Age</th></tr>"+ output;
+    			}
+    		})
+    	})
+    		
+    	
+
+    	
+    	
+    </script>
+    
+    <style>
+    	#searchForm {
+    		margin:auto;
+    		width:50%;
+    	
+    	}
+		#tablaUser, #tablaConver{
+		  font-family: Arial, Helvetica, sans-serif;
+		  border-collapse: collapse;
+		  width: 90%;
+		  margin:auto;
+		}
+		
+		#tablaUser td, #tablaUser th, #tablaConver td, #tablaConver th {
+		  border: 1px solid #ddd;
+		  padding: 8px;
+		}
+		
+		#tablaUser tr:nth-child(even){background-color: #f2f2f2;}
+		#tablaConver tr:nth-child(even){background-color: #f2f2f2;}
+		
+		#tablaUser tr:hover {background-color: #ddd;}
+		#tablaConver tr:hover {background-color: #ddd;}
+		
+		#tablaUser th, #tablaConver th {
+		  padding-top: 12px;
+		  padding-bottom: 12px;
+		  text-align: left;
+		  background-color: #F28C28;
+		  color: white;
+		}
+		h3 {
+			padding-left:70px;
+			padding-bottom:5px;
+		}
+	</style>
+
+</head>
+
+<body>
+	<!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+    <!-- Offcanvas Menu Section Begin -->
+    <div id="offCanvas"></div>
+    <!-- Offcanvas Menu Section End -->
+    <!-- Header Section Begin -->
+    <div id="header"></div>    
+    <!-- Header End -->
+    <div id="searchForm">
+	<form action="javascript:buscarUsuario()">
+		<label for="searchUser">Buscar usuario</label>
+		<input type="text" id="searchUserText">
+		<input type="submit" value="Buscar">
+	
+	</form>
+	</div>
+	<h3>Búsqueda</h3>
+	<table id="tablaUser">
+		<tr>
+		   <th>Email</th>
+		   <th>Name</th>
+		   <th>Lastname</th>
+		   <th>Age</th>
+		</tr>
+		
+	</table>
+	<br><hr  style="width:80%; border-top: 3px solid #bbb;
+">
+	
+	<h3>Conversaciones </h3>
+	<table id="tablaConver">
+		<tr>
+		   <th>Email</th>
+		   <th>Name</th>
+		   <th>Lastname</th>
+		   <th>Age</th>
+		</tr>
+		
+	</table>
+	<!-- Footer Section Begin -->
+    <div id="footer"></div>
+    <!-- Footer Section End -->
+
+    
+
+</body>
+
+
+
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Sona Template">
+    <meta name="keywords" content="Sona, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>LandBNB</title>
+	
+	
+    
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Cabin:400,500,600,700&display=swap" rel="stylesheet">
+    
+    
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="css/flaticon.css" type="text/css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
+    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+	<!--  import del navbar -->
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="../js/detallesApartamento.js"></script>
+	
+	 <!-- Js Plugins -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/jquery.slicknav.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+	     integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+	     crossorigin=""/>	 
+	<!-- Make sure you put this AFTER Leaflet's CSS -->
+	 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+	     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+	     crossorigin=""></script>
+	
+	
+	<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+	 <script src="js/leaflet.markercluster.js"></script>
+	<script type="text/javascript"> 
+    	$(function(){
+			$("#header").load("header.html"); 
+		    $("#offCanvas").load("offCanvas.html"); 
+		    $("#footer").load("footer.html"); 
+		 });
+	</script>
+	
+	
+ 	
+	<script>
+	var map;
+	$(document).ready(function() {
+		//container
+		//map = L.map('map').setView([36.7211, -4.4213], 13);
+		
+		//contenido del mapa, calles y todo eso
+		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		    maxZoom: 19,
+		    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		}).addTo(map);
+		
+		
+		 
+		
+		
+		//funcion para añadir popup donde se hace click
+		var popup = L.popup();
+
+		function onMapClick(e) {
+		    popup
+		        .setLatLng(e.latlng)
+		        .setContent("Posición: " + e.latlng.toString())
+		        .openOn(map);
+		    document.getElementById("latitude").value = e.latlng.lat;
+		    document.getElementById("longitude").value = e.latlng.lng;
+		}
+
+		map.on('click', onMapClick); 
+	
+		
+		
+	    $.ajax({
+	    	type:"GET",
+	      	url: sessionStorage.url+"/api/apartment/"+sessionStorage.apartmentId,
+	    }).then(function(data) {
+	    	let date = new Date(data.date)
+
+	    	let day = date.getDate()
+	    	let month = date.getMonth() + 1
+	    	let year = date.getFullYear()
+			
+			
+	    	
+	    	if(month < 10){
+	    		if(day < 10){
+		    		document.getElementById("date").value = year + '-0' + month + '-0' + day
+				} else {
+		    		document.getElementById("date").value = year + '-0' + month + '-' + day
+				}
+	    	}else{
+	    		if(day < 10){
+		    		document.getElementById("date").value = year + '-' + month + '-0' + day
+				} else {
+		    		document.getElementById("date").value = year + '-' + month + '-' + day
+
+				}
+	    	}
+	    	document.getElementById("title").value = data.title;
+			document.getElementById("place").value = data.place;
+			document.getElementById("description").value = data.description;
+			document.getElementById("capacity").value = data.capacity;
+			document.getElementById("price").value = data.price;
+			document.getElementById("latitude").value = data.latitude;
+			document.getElementById("longitude").value = data.longitude;
+			var marker = L.marker([data.latitude, data.longitude]).addTo(map);
+
+			
+	    });
+	});
+	
+	function addFlat(){
+		
+		var formData = new FormData();
+		formData.append("id", sessionStorage.apartmentId)
+		formData.append("title", document.getElementById("title").value)
+		formData.append("place", document.getElementById("place").value)
+		formData.append("description", document.getElementById("description").value)
+		formData.append("date", document.getElementById("date").value)
+		formData.append("capacity", document.getElementById("capacity").value)
+		formData.append("price", document.getElementById("price").value)
+		var a = document.getElementById("fileId").files;
+		if(a.length > 0){
+			formData.append("image", document.getElementById("fileId").files[0])
+		}
+		formData.append("latitude", document.getElementById("latitude").value)
+		formData.append("longitude", document.getElementById("longitude").value)
+
+		
+		$.ajax({
+			type:"PUT",
+			url: sessionStorage.url+"/api/apartment/",
+		    processData: false,
+			contentType: false,
+		    data:formData,
+			success: function(data){		
+				//alert(document.getElementById("fileId").files[0]);
+				document.location = "misViviendas.html"
+			}
+		});
+	}
+	
+	var borrar = function(){
+		$.ajax({
+			type:"DELETE",
+			url: sessionStorage.url+"/api/apartment/",
+			data:{
+				id:sessionStorage.apartmentId,
+			},
+			success: function(msg){
+				//alert("SE HA ELIMINADO LA VIVIENDA CORRECTAMENTE");
+			}
+		}).then(function(datos){
+			location.href = "misViviendas.html";
+		})
+		
+	}
+	
+	</script>
+	
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Offcanvas Menu Section Begin -->
+    <div id="offCanvas"></div>
+    <!-- Offcanvas Menu Section End -->
+
+    <!-- Header Section Begin -->
+    <div id="header"></div>
+    <!-- Header End -->
+
+    <!-- Breadcrumb Section Begin -->
+    <div class="breadcrumb-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-text">
+                        <h2 class="apartment-title"></h2>
+                        <div>
+                            <a>Edita tu vivienda</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Room Details Section Begin -->
+    <section class="room-details-section spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="room-details-item">
+                        <img id="imageShow" alt="">
+                        <div class="rd-text">
+                            <div class="rd-title">
+                                <h3><input type="text" id="title" placeholder="Flat"></h3>
+                                <div class="rdt-right">
+                                    <div class="rating">
+                                        <i class="icon_star"></i>
+                                        <i class="icon_star"></i>
+                                        <i class="icon_star"></i>
+                                        <i class="icon_star"></i>
+                                        <i class="icon_star-half_alt"></i>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <h2><input type="number" id="price" placeholder="Price">€<span>/Por noche</span></h2>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td class="r-o">Ubicación:</td>
+                                        <td><input type="text" id="place" placeholder="Street address, P.O. box, company name, c/o"></td>                                      
+                                    </tr>
+                                    <tr>
+                                        <td class="r-o">Capacidad:</td>
+                                        <td><input type="number" min="1" id="capacity" placeholder="1" size="4"></td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                            <p><textarea id="description" placeholder="Apartment, suite, unit, building, floor, etc." rows=3 cols=150></textarea>
+                            </p>
+                            <p>Fecha de disponibilidad: <input type="date" id="date" placeholder="01/01/1999"></p>
+                            <div id="map" style="height:700px; width:1200px; margin:0 auto; margin-bottom:50px"></div>
+                            	
+                            	<label for="latitud">Latitud: </label>
+                            	<input id="latitude" type="number" step="0.0000000000000001" id="latitud" readonly>
+								<label for="longitud">Longitud: </label>
+								<input id="longitude" type="number"  step="0.0000000000000001" id="longitud" readonly>
+                            
+                            <div>
+								<form method="POST" enctype="multipart/form-data" action="javascript:addFlat()">
+									<input type="file" id="fileId">
+									
+									<div class="form-group"> <!-- Submit Button -->
+								        <button type="submit" class="btn btn-primary">EDITAR</button>
+								    </div>
+								
+									
+								</form>
+							</div>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                </div>
+                <div class="col-lg-4">
+                    <div>
+                        <div class="col"><a href="misViviendas.html" ></a></div>
+                		<form action="javascript:borrar()">
+									
+									<div class="form-group"> <!-- Submit Button -->
+								        <button type="submit" style="border: 2px solid black;color: black;background-color: orange;"><b>Borrar vivienda</b></button>
+								    </div>
+								
+									
+						</form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Room Details Section End -->
+
+    <!-- Footer Section Begin -->
+    <div id="footer"></div>
+    <!-- Footer Section End -->
+
+   
+   
+    
+    
+</body>
+
+</html>

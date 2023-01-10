@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="stylesheet" type="text/css"
+    href="/webjars/bootstrap/css/bootstrap.min.css" />
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript"
+    src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../css/login.css"/>
+   
+<script src="https://kit.fontawesome.com/810e0613ae.js" crossorigin="anonymous"></script>
+</head>
+<body class="login">
+    
+    <script type="text/javascript"
+    src="/webjars/js-cookie/js.cookie.js"></script>
+    <script type="text/javascript">
+          $
+              .ajaxSetup({
+                beforeSend : function(xhr, settings) {
+              	  sessionStorage.url = "";
+
+                  if (settings.type == 'POST' || settings.type == 'PUT'
+                      || settings.type == 'DELETE') {
+                    if (!(/^http:.*/.test(settings.url) || /^https:.*/
+                        .test(settings.url))) {
+                      // Only send the token to relative URLs i.e. locally.
+                      xhr.setRequestHeader("X-XSRF-TOKEN",
+                          Cookies.get('XSRF-TOKEN'));
+                    }
+                  }
+                }
+              });
+          
+          $.get("/user", function(data) {
+        	$.ajax({
+      	    	url: sessionStorage.url+"/api/user/usersByAccountAuthentication",
+      	    	data:{accountAuthentication:data.accountAuthentication},
+	        	success: function(msg){
+		             //alert(data.string);
+		        }
+      	    }).then(function(datos) {
+      	    	if(datos == null){
+					$.ajax({
+						type: "POST",
+						url: sessionStorage.url+"/api/user/",
+						data:{email:data.email, name:data.name, lastname:data.lastname, age:data.age, accountAuthentication:data.accountAuthentication, image:data.avatar_url},
+						success: function(msg){
+				             //alert(data.accountAuthentication);
+				        }
+					}).then(function(d){
+						//alert(data.string);
+						sessionStorage.userId = d.usuarioId;				
+					})
+				} else {
+					sessionStorage.userId = datos.usuarioId;
+				}	
+      	    });
+        	
+            $("#user").html(data.name);
+            $(".unauthenticated").hide();
+            $(".authenticated").show();
+          });
+          var logout = function() {
+            $.post("/logout", function() {
+            	sessionStorage.removeItem("id");
+            	sessionStorage.removeItem("email");
+            	sessionStorage.removeItem("name");
+            	sessionStorage.removeItem("lastname");
+            	sessionStorage.removeItem("age");
+              $("#user").html('');
+              $(".unauthenticated").show();
+              $(".authenticated").hide();
+            })
+            return true;
+          }
+        </script>
+        <div>
+        <br><br><br><br><br><br>
+        <br><br><br><br><br><br>
+        <br><br><br><br><br><br>
+			<div class="login-div" style="height:20%;width:15%; margin:auto; background-color:white">
+				<div id="login">
+					<a id="github-button" href="/oauth2/authorization/github" class="container unauthenticated btn btn-block btn-social btn-github">
+					  <i class="fa fa-github"></i> Sign in with Github
+					</a>
+				</div>
+		    	<div class="container authenticated" style="display: none">
+			        Logged in as: <span id="user"></span>
+			        <div>
+			            <button onClick="logout()" class="btn btn-primary">Logout</button>
+			        </div>
+		    	</div>
+		    </div>
+    </div>        
+        
+        
+</body>
+</html>
