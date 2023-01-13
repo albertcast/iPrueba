@@ -43,7 +43,7 @@
     	function mostrarMensajes(){
     		$.ajax({
     			type:"GET",
-    			url:sessionStorage.url+"/api/message/messagesBetweenUsers",
+    			url:"/api/message/messagesBetweenUsers",
     			data:{
     				firstUserId:sessionStorage.userId,
     				secondUserId:sessionStorage.receiver,
@@ -57,7 +57,7 @@
 
 	    					$.ajax({
 	    						type:"GET",
-	        					url:sessionStorage.url+"/api/user/"+i.sender,
+	        					url:"/api/user/"+i.sender,
 	        					success:function(datos){
 	        						if(i.sender==sessionStorage.userId){
 	    	    						sel +="<tr style='border: solid thin' class='table-success'><td style='width:30%;'>" + datos.nombre+ " " + datos.apellidos + "</td><td style='width:125px'>" + i.content + "</td><td style='width: 10%; white-space:nowrap;'><form action='javascript:editarComentario("+'"'+i.content+'","'+i.id+'"'+")'><input class='btn btn-warning' type='submit' value='Editar'></form></td><td style='width: 10%; white-space:nowrap;'><form action='javascript:borrarComentario("+'"'+i.id+'"'+")'><input class='btn btn-danger' type='submit' value='Borrar'></form></td></tr>";
@@ -85,7 +85,7 @@
     	function crearMensaje(){
     		$.ajax({
     			type:"POST",
-    			url:sessionStorage.url+"/api/message/",
+    			url:"/api/message/",
     			data:{
     				sender:sessionStorage.userId,
     				receiver:sessionStorage.receiver,
@@ -110,7 +110,7 @@
     	function editarMensaje(mId){
     		$.ajax({
     			type:"PUT",
-    			url:sessionStorage.url+"/api/message/",
+    			url:"/api/message/",
     			data:{
     				id:mId,
     				content:document.getElementById("contId").value,
@@ -126,7 +126,7 @@
     	function borrarComentario(meId){
     		$.ajax({
     			type:"DELETE",
-    			url:sessionStorage.url+"/api/message/",
+    			url:"/api/message/",
     			data:{
     				id:meId,
     			},

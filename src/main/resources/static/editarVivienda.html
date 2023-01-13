@@ -98,7 +98,7 @@
 		
 	    $.ajax({
 	    	type:"GET",
-	      	url: sessionStorage.url+"/api/apartment/"+sessionStorage.apartmentId,
+	      	url: "/api/apartment/"+sessionStorage.apartmentId,
 	    }).then(function(data) {
 	    	let date = new Date(data.date)
 
@@ -155,7 +155,7 @@
 		
 		$.ajax({
 			type:"PUT",
-			url: sessionStorage.url+"/api/apartment/",
+			url: "/api/apartment/",
 		    processData: false,
 			contentType: false,
 		    data:formData,
@@ -169,7 +169,7 @@
 	var borrar = function(){
 		$.ajax({
 			type:"DELETE",
-			url: sessionStorage.url+"/api/apartment/",
+			url: "/api/apartment/",
 			data:{
 				id:sessionStorage.apartmentId,
 			},

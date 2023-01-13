@@ -45,7 +45,7 @@
 	$(document).ready(function() {
 		$.ajax({
 			type:"GET",
-			url:sessionStorage.url+"/api/user/"+sessionStorage.userId,
+			url:"/api/user/"+sessionStorage.userId,
 			success: function(data){
 				document.getElementById("imageShow").setAttribute("src", data.image);
 		        
@@ -115,7 +115,7 @@
 		}
 		$.ajax({
 			type:"PUT",
-			url:sessionStorage.url+"/api/user/",
+			url:"/api/user/",
 		    processData: false,
 			contentType: false,
 			data:formData,

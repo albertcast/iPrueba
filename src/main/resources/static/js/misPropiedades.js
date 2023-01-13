@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $.ajax({
-      	url: sessionStorage.url+"/api/apartment/apartmentsByOwner",
+      	url: "/api/apartment/apartmentsByOwner",
 		data:{
 			owner:sessionStorage.userId,
 		},

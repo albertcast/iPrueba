@@ -9,7 +9,7 @@ $(document).ready(function(id) {
 	}).addTo(map);
 		
     $.ajax({
-        url: sessionStorage.url+"/api/apartment/"+window.sessionStorage.apartmentId
+        url: "/api/apartment/"+window.sessionStorage.apartmentId
     }).then(function(data) {
        	$('.apartment-title').append(data.title);
        	$('.apartment-place').append(data.place);

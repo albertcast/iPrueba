@@ -32,7 +32,7 @@ $(document).ready(function() {
  
     $.ajax({
         type:"GET",
-        url: sessionStorage.url+"/api/comment/commentsByApartment/",
+        url: "/api/comment/commentsByApartment/",
 		data:{
 			id:sessionStorage.apartmentId
 		},
@@ -41,7 +41,7 @@ $(document).ready(function() {
             data.map(i => (
                 $.ajax({
                     type:"GET",
-                       url: sessionStorage.url+"/api/user/"+i.user,
+                       url: "/api/user/"+i.user,
                        success: function(datos){
                     let output = "<div class='review-item'>"+
                             "<div class='ri-pic'>"+

@@ -18,7 +18,6 @@
           $
               .ajaxSetup({
                 beforeSend : function(xhr, settings) {
-              	  sessionStorage.url = "";
 
                   if (settings.type == 'POST' || settings.type == 'PUT'
                       || settings.type == 'DELETE') {
@@ -34,7 +33,7 @@
           
           $.get("/user", function(data) {
         	$.ajax({
-      	    	url: sessionStorage.url+"/api/user/usersByAccountAuthentication",
+      	    	url: "/api/user/usersByAccountAuthentication",
       	    	data:{accountAuthentication:data.accountAuthentication},
 	        	success: function(msg){
 		             //alert(data.string);
@@ -43,7 +42,7 @@
       	    	if(datos == null){
 					$.ajax({
 						type: "POST",
-						url: sessionStorage.url+"/api/user/",
+						url: "/api/user/",
 						data:{email:data.email, name:data.name, lastname:data.lastname, age:data.age, accountAuthentication:data.accountAuthentication, image:data.avatar_url},
 						success: function(msg){
 				             //alert(data.accountAuthentication);
@@ -74,6 +73,11 @@
             })
             return true;
           }
+          
+          function login(){
+        	  alert("aa");
+        	  location.href = "/oauth2/authorization/github"
+          }
         </script>
         <div>
         <br><br><br><br><br><br>
@@ -81,7 +85,7 @@
         <br><br><br><br><br><br>
 			<div class="login-div" style="height:20%;width:15%; margin:auto; background-color:white">
 				<div id="login">
-					<a id="github-button" href="/oauth2/authorization/github" class="container unauthenticated btn btn-block btn-social btn-github">
+					<a id="github-button" href="javascript:login()" class="container unauthenticated btn btn-block btn-social btn-github">
 					  <i class="fa fa-github"></i> Sign in with Github
 					</a>
 				</div>

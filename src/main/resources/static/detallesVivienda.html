@@ -61,7 +61,7 @@
 	<script src="../js/detallesApartamento.js"></script>
     <script>
     	$.ajax({
-    		url: sessionStorage.url+"/api/apartment/"+window.sessionStorage.apartmentId
+    		url: "/api/apartment/"+window.sessionStorage.apartmentId
     	}).then(function(data) {
     		let date = new Date(data.date)
 
@@ -99,7 +99,7 @@
 		var reservar = function(){
 			$.ajax({
 				type:"POST",
-	    		url: sessionStorage.url+"/api/booking/",
+	    		url: "/api/booking/",
 	    		data:{ 
 	    			guest:sessionStorage.userId,
 	    			arrivalDate:document.getElementById("date-in").value, 
@@ -109,7 +109,7 @@
 	    	}).then(function(data) {
 	    		$.ajax({
 	    			type:"GET",
-	    	        url: sessionStorage.url+"/api/apartment/"+window.sessionStorage.apartmentId
+	    	        url: "/api/apartment/"+window.sessionStorage.apartmentId
 	    		}).then(function(datos){
 	    			var formData = new FormData();
 	    			formData.append("id", sessionStorage.apartmentId)
@@ -124,7 +124,7 @@
 	    			formData.append("longitude", datos.longitude)
 	    			$.ajax({
 						type:"PUT",
-						url: sessionStorage.url+"/api/apartment/",	
+						url: "/api/apartment/",	
 						processData: false,
 						contentType: false,
 						data: formData,
@@ -134,7 +134,7 @@
 							 
 							 $.ajax({
 					    			type:"POST",
-					    			url:sessionStorage.url+"/api/message/",
+					    			url:"/api/message/",
 					    			data:{
 					    				sender:sessionStorage.userId,
 					    				receiver:datos.owner,
@@ -184,7 +184,7 @@
     	}
 		$.ajax({
 			type:"POST",
-			url: sessionStorage.url+"/api/comment/",
+			url: "/api/comment/",
 			data:{
 				user:sessionStorage.userId,
 				apartment:sessionStorage.apartmentId,
@@ -202,7 +202,7 @@
 	function borrar(cid){
 		$.ajax({
 				type:"DELETE",
-				url: sessionStorage.url+"/api/comment/",
+				url: "/api/comment/",
 				data:{
 					id:cid,
 				},

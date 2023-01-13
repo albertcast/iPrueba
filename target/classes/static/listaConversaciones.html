@@ -51,7 +51,7 @@
 
     	function buscarUsuario(){
     		$.ajax({
-    			url:sessionStorage.url+"/api/user/usersByName",
+    			url:"/api/user/usersByName",
     			data:{
     				name:document.getElementById("searchUserText").value,
     			},
@@ -77,7 +77,7 @@
     	$(document).ready(function(){
     		$.ajax({
     			type:"GET",
-    			url:sessionStorage.url+"/api/user/usersByChats",
+    			url:"/api/user/usersByChats",
     			data:{
     				usuarioId:sessionStorage.userId,
     			},

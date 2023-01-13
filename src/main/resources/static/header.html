@@ -8,8 +8,6 @@
           $
               .ajaxSetup({
                 beforeSend : function(xhr, settings) {
-				  sessionStorage.url = "";
-
                   if (settings.type == 'POST' || settings.type == 'PUT'
                       || settings.type == 'DELETE') {
                     if (!(/^http:.*/.test(settings.url) || /^https:.*/
@@ -23,7 +21,7 @@
               });
           $.get("/user", function(data) {
           	$.ajax({
-        	    	url: sessionStorage.url+"/api/user/usersByAccountAuthentication",
+        	    	url: "/api/user/usersByAccountAuthentication",
         	    	data:{accountAuthentication:data.accountAuthentication},
   	        	success: function(msg){
   		             //alert(data.string);
@@ -32,7 +30,7 @@
         	    	if(datos == null){
   					$.ajax({
   						type: "POST",
-  						url: sessionStorage.url+"/api/user/",
+  						url: "/api/user/",
   						data:{email:data.email, name:data.name, lastname:data.lastname, age:data.age, accountAuthentication:data.accountAuthentication, image:data.avatar_url},
   						success: function(msg){
   				             //alert(data.accountAuthentication);

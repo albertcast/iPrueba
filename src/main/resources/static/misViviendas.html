@@ -68,7 +68,7 @@
 	var borrar = function(){
 		$.ajax({
 			type:"DELETE",
-			url: sessionStorage.url+"/api/apartment/"+sessionStorage.apartmentId,
+			url: "/api/apartment/"+sessionStorage.apartmentId,
 			data:{
 				apartment:sessionStorage.apartmentId,
 			},
