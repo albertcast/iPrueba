@@ -1,16 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Sona Template">
-    <meta name="keywords" content="Sona, unica, creative, html">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <base href="bruh.html">
-    <title>LandBNB</title>
-
-    <!-- Google Font -->
+	<!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Lora:400,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Cabin:400,500,600,700&display=swap" rel="stylesheet">
 
@@ -37,18 +28,105 @@
     <script src="js/jquery.slicknav.js"></script>
     <script src="js/owl.carousel.min.js"></script>
     <script src="js/main.js"></script>
-    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+	     integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+	     crossorigin=""/>	 
+	<!-- Make sure you put this AFTER Leaflet's CSS -->
+	 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+	     integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+	     crossorigin=""></script>
+	
+	
+	<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+	 <script src="js/leaflet.markercluster.js"></script>
     <script type="text/javascript"> 
     	$(function(){
 			$("#header").load("header.html"); 
 		    $("#offCanvas").load("offCanvas.html"); 
 		    $("#footer").load("footer.html"); 
 		 });
+		var map;
+		$(document).ready(function() {
+			$.ajax({
+				url:"/api/user/",
+				success: function(data){			
+					 let output = data.map(i => "<tr><th scope='row'>" + i.email + "</td><td>" + i.nombre 
+												+ "</td><td>" + i.apellidos + "</td><td>" + i.edad + "</td></tr>").join('');
+					document.getElementById("tablaUser").innerHTML += output;
+				}
+			})
+			
+			
+			
+			//container
+			map = L.map('map').setView([36.7211, -4.4213], 13);
+			
+			//contenido del mapa, calles y todo eso
+			L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			    maxZoom: 19,
+			    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+			}).addTo(map);
+			
+			
+			 
+			
+			
+			//funcion para a�adir popup donde se hace click
+			var popup = L.popup();
+
+			function onMapClick(e) {
+			    popup
+			        .setLatLng(e.latlng)
+			        .setContent("Posici�n: " + e.latlng.toString())
+			        .openOn(map);
+			}
+
+			map.on('click', onMapClick);
+			var markers
+			var linea = function(){
+				if(markers != null){
+					markers.clearLayers();
+				}
+				markers = L.markerClusterGroup({disableClusteringAtZoom:true});
+				
+				//contenido del mapa, calles y todo eso
+				L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				    maxZoom: 19,
+				    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+				}).addTo(map);
+			$.ajax({
+					url:"/api/ejemplo/lineaParadasBus",
+					data:{
+						linea:document.getElementById("lineaId").value,
+					},
+					success(datos){
+						datos.paradas.map(i => {
+							var lat = i.parada.latitud;
+							var lon = i.parada.longitud;
+							
+							map.panTo(new L.LatLng(lat, lon));
+
+							var marker = L.marker([lat, lon]);
+							marker.bindPopup(i.parada.nombreParada + "<br> Direcci�n: " + i.parada.direccion).openPopup();
+					        markers.addLayer(marker);
+
+						})
+
+						markers.addTo(map);
+					}
+				})
+
+			}
+		})
+		
+		
+		
 	</script>
+
 </head>
 
 <body>
-    <!-- Page Preloder -->
+	<!-- Page Preloder -->
     <div id="preloder">
         <div class="loader"></div>
     </div>
@@ -58,135 +136,29 @@
     <!-- Header Section Begin -->
     <div id="header"></div>    
     <!-- Header End -->
-    <!-- Hero Section Begin -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="hero-text">
-                        <h1>LandBNB</h1>
-                        <p>Aquí encontrarás las mejores viviendas de alquiler vacacional. Todas ellas al mejor precio y con las mejores condiciones.</p>
-                        <a href="./viviendas.html" class="primary-btn">Descúbrelas</a>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        <div class="hero-slider owl-carousel">
-            <div class="hs-item set-bg" data-setbg="img/hero/hero-1.jpg"></div>
-            <div class="hs-item set-bg" data-setbg="img/hero/hero-2.jpg"></div>
-            <div class="hs-item set-bg" data-setbg="img/hero/hero-3.jpg"></div>
-        </div>
-    </section>
-    <!-- Hero Section End -->
-
-    <!-- About Us Section Begin -->
-    <section class="aboutus-section spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="about-text">
-                        <div class="section-title">
-                            <span>Sobre nosotros</span>
-                            <h2>LandBNB <br /></h2>
-                        </div>
-                        <p class="f-para">LandBNB es una de las empresas líderes en el sector del alquiler vacacional. Existimos para ofrecer a nuestros clientes
-                            los mejores servicios y hacerlos disfrutar de su estancia lo máximo posible.</p>
-                        <p class="s-para">Así que, si quieres una vivienda para pasar unos días de vacaciones, estás en el lugar correcto.</p>
-                        <a href="#" class="primary-btn about-btn">Saber más</a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="about-pic">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <img src="img/about/about-1.jpg" alt="">
-                            </div>
-                            <div class="col-sm-6">
-                                <img src="img/about/about-2.jpg" alt="">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- About Us Section End -->
-
-    <!-- Services Section End -->
-    
-    <!-- Services Section End -->
-
-    <!-- Home Room Section Begin -->
-    
-    <!-- Home Room Section End -->
-
-    <!-- Testimonial Section Begin -->
-    <section class="testimonial-section spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section-title">
-                        <span>Opiniones</span>
-                        <h2>¿Qué dice la gente sobre nosotros?</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-8 offset-lg-2">
-                    <div class="testimonial-slider owl-carousel">
-                        <div class="ts-item">
-                            <p>After a construction project took longer than expected, my husband, my daughter and I
-                                needed a place to stay for a few nights. As a Chicago resident, we know a lot about our
-                                city, neighborhood and the types of housing options available and absolutely love our
-                                vacation at Sona Hotel.</p>
-                            <div class="ti-author">
-                                <div class="rating">
-                                    <i class="icon_star"></i>
-                                    <i class="icon_star"></i>
-                                    <i class="icon_star"></i>
-                                    <i class="icon_star"></i>
-                                    <i class="icon_star-half_alt"></i>
-                                </div>
-                                <h5> - Alexander Vasquez</h5>
-                            </div>
-                            <img src="img/testimonial-logo.png" alt="">
-                        </div>
-                        <div class="ts-item">
-                            <p>After a construction project took longer than expected, my husband, my daughter and I
-                                needed a place to stay for a few nights. As a Chicago resident, we know a lot about our
-                                city, neighborhood and the types of housing options available and absolutely love our
-                                vacation at Sona Hotel.</p>
-                            <div class="ti-author">
-                                <div class="rating">
-                                    <i class="icon_star"></i>
-                                    <i class="icon_star"></i>
-                                    <i class="icon_star"></i>
-                                    <i class="icon_star"></i>
-                                    <i class="icon_star-half_alt"></i>
-                                </div>
-                                <h5> - Alexander Vasquez</h5>
-                            </div>
-                            <img src="img/testimonial-logo.png" alt="">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Testimonial Section End -->
-
-    <!-- Blog Section Begin -->
-    
-    <!-- Blog Section End -->
-
-    <!-- Footer Section Begin -->
+	
+	<div id="map" style="height:700px; width:1200px; margin:0 auto; margin-bottom:50px"></div>
+	<table class="table">
+		<thead>
+		    <tr>
+		      <th scope="col">Email</th>
+		      <th scope="col">Nombre</th>
+		      <th scope="col">Apellidos</th>
+		      <th scope="col">Edad</th>
+		    </tr>
+		  </thead>
+		  <tbody id="tablaUser">
+		    
+		  </tbody>
+	</table>
+	<!-- Footer Section Begin -->
     <div id="footer"></div>
     <!-- Footer Section End -->
 
-  
+    
 
-   
 </body>
+
+
 
 </html>
